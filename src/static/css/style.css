@@ -1,0 +1,252 @@
+/* ── Reset & base ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #f0f4f8;
+  color: #2d3748;
+  min-height: 100vh;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────── */
+nav {
+  background: #1a365d;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 56px;
+}
+
+nav a {
+  color: #bee3f8;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.25rem 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+nav a:hover {
+  color: #fff;
+  border-bottom-color: #63b3ed;
+}
+
+/* ── Main container ───────────────────────────────────────────────────── */
+main {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a365d;
+  margin-bottom: 1.25rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c5282;
+  margin: 2rem 0 0.75rem;
+}
+
+/* ── Status bar (painel) ──────────────────────────────────────────────── */
+#status-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ebf8ff;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  color: #2b6cb0;
+}
+
+#status-bar label { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+button {
+  background: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover { background: #2b6cb0; }
+
+button[onclick*="deletar"] {
+  background: #e53e3e;
+}
+
+button[onclick*="deletar"]:hover { background: #c53030; }
+
+/* ── Links como botão ─────────────────────────────────────────────────── */
+a.btn {
+  display: inline-block;
+  background: #3182ce;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+a.btn:hover { background: #2b6cb0; }
+
+/* ── Tabela ───────────────────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  font-size: 0.92rem;
+}
+
+thead {
+  background: #2b6cb0;
+  color: #fff;
+}
+
+thead th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+tbody tr { border-bottom: 1px solid #e2e8f0; transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #ebf8ff; }
+
+tbody td {
+  padding: 0.7rem 1rem;
+  vertical-align: middle;
+}
+
+tbody td a {
+  color: #3182ce;
+  text-decoration: none;
+  font-weight: 500;
+  margin-right: 0.4rem;
+}
+
+tbody td a:hover { text-decoration: underline; }
+
+/* ── Paginação ────────────────────────────────────────────────────────── */
+.paginacao {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.paginacao a {
+  background: #fff;
+  color: #2b6cb0;
+  border: 1px solid #bee3f8;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background 0.2s, color 0.2s;
+}
+
+.paginacao a:hover { background: #2b6cb0; color: #fff; }
+
+/* ── Formulário (editar) ──────────────────────────────────────────────── */
+form {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+form input[type="number"],
+form input[type="text"] {
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+form input:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49,130,206,0.2);
+}
+
+form button[type="submit"] { align-self: flex-start; }
+
+/* ── Detalhe (dl) ─────────────────────────────────────────────────────── */
+dl {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.6rem 1.5rem;
+  max-width: 480px;
+  margin-bottom: 1.25rem;
+}
+
+dt { font-weight: 600; color: #4a5568; font-size: 0.9rem; }
+dd { color: #2d3748; }
+
+/* ── Página de erro ───────────────────────────────────────────────────── */
+.erro-box {
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 480px;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.erro-box h1 { color: #c53030; }
+.erro-box p  { margin: 0.75rem 0 1.25rem; color: #744210; }
+
+/* ── Gráfico ──────────────────────────────────────────────────────────── */
+#grafico {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ── Info / links soltos ──────────────────────────────────────────────── */
+p { margin: 0.75rem 0; font-size: 0.95rem; color: #4a5568; }
+p a { color: #3182ce; font-weight: 500; }
+p a:hover { text-decoration: underline; }

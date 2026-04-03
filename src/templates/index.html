@@ -4,6 +4,14 @@
 {% block content %}
 <h1>Painel — Últimas 10 leituras</h1>
 
+<div id="status-bar">
+  <span id="ultima-atualizacao">Atualizado agora</span>
+  <button onclick="atualizarPagina()">&#8635; Atualizar</button>
+  <label>
+    <input type="checkbox" id="auto-refresh" onchange="toggleAutoRefresh(this)"> Auto (30s)
+  </label>
+</div>
+
 {% if leituras %}
 <table>
   <thead>
@@ -38,12 +46,89 @@
 
 <p><a href="/leituras">Ver histórico completo →</a></p>
 
+<h2>Variação Temporal</h2>
+<canvas id="grafico" height="100"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+let autoRefreshTimer = null;
+let grafico = null;
+
+// ---------- gráfico ----------
+async function carregarGrafico() {
+  const resp = await fetch('/leituras?formato=json&limite=20');
+  if (!resp.ok) return;
+  const json = await resp.json();
+  const leituras = json.leituras ?? json; // suporta lista direta ou objeto paginado
+
+  const labels    = leituras.map(l => l.timestamp).reverse();
+  const temps     = leituras.map(l => l.temperatura).reverse();
+  const umidades  = leituras.map(l => l.umidade).reverse();
+
+  const dados = {
+    labels,
+    datasets: [
+      {
+        label: 'Temperatura (°C)',
+        data: temps,
+        borderColor: '#e74c3c',
+        backgroundColor: 'rgba(231,76,60,0.1)',
+        tension: 0.3,
+        fill: true,
+      },
+      {
+        label: 'Umidade (%)',
+        data: umidades,
+        borderColor: '#3498db',
+        backgroundColor: 'rgba(52,152,219,0.1)',
+        tension: 0.3,
+        fill: true,
+      },
+    ],
+  };
+
+  if (grafico) {
+    grafico.data = dados;
+    grafico.update();
+  } else {
+    grafico = new Chart(document.getElementById('grafico'), {
+      type: 'line',
+      data: dados,
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } },
+        scales: { x: { ticks: { maxTicksLimit: 8 } } },
+      },
+    });
+  }
+}
+
+// ---------- auto-refresh ----------
+function atualizarPagina() {
+  document.getElementById('ultima-atualizacao').textContent = 'Atualizando...';
+  location.reload();
+}
+
+function toggleAutoRefresh(checkbox) {
+  if (checkbox.checked) {
+    autoRefreshTimer = setInterval(atualizarPagina, 30000);
+  } else {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+  }
+}
+
+// ---------- deletar ----------
 async function deletar(id) {
   if (!confirm(`Deletar leitura #${id}?`)) return;
   const resp = await fetch(`/leituras/${id}`, { method: 'DELETE' });
   if (resp.ok) location.reload();
   else alert('Erro ao deletar.');
 }
+
+// ---------- init ----------
+const agora = new Date().toLocaleTimeString('pt-BR');
+document.getElementById('ultima-atualizacao').textContent = `Atualizado às ${agora}`;
+carregarGrafico();
 </script>
 {% endblock %}

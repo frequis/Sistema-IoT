@@ -1,1 +1,1 @@
-# Medição Meteorológica - IoT
+# Medição Metereológica - IoT

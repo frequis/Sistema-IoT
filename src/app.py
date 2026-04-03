@@ -8,6 +8,7 @@ from database import (
     deletar_leitura,
     get_db_connection,
 )
+from config import FLASK_DEBUG, FLASK_HOST, FLASK_PORT
 
 app = Flask(__name__)
 
@@ -229,4 +230,4 @@ def erro(e):
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=FLASK_DEBUG)
