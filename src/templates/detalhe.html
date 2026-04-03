@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Leitura #{{ leitura.id }}{% endblock %}
+
+{% block content %}
+<h1>Leitura #{{ leitura.id }}</h1>
+
+<dl>
+  <dt>Temperatura</dt><dd>{{ leitura.temperatura }} °C</dd>
+  <dt>Umidade</dt><dd>{{ leitura.umidade }} %</dd>
+  <dt>Pressão</dt><dd>{{ leitura.pressao if leitura.pressao is not none else '—' }} hPa</dd>
+  <dt>Registrada em</dt><dd>{{ leitura.timestamp }}</dd>
+</dl>
+
+<a href="/leituras/{{ leitura.id }}/editar">Editar</a>
+<button data-id="{{ leitura.id }}" onclick="deletar(this.dataset.id)">Deletar</button>
+<a href="/leituras">&#8592; Voltar ao histórico</a>
+
+<script>
+async function deletar(id) {
+  if (!confirm(`Deletar leitura #${id}?`)) return;
+  const resp = await fetch(`/leituras/${id}`, { method: 'DELETE' });
+  if (resp.ok) window.location.href = '/leituras';
+  else alert('Erro ao deletar.');
+}
+</script>
+{% endblock %}

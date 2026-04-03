@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Painel — Estação Meteorológica{% endblock %}
+
+{% block content %}
+<h1>Painel — Últimas 10 leituras</h1>
+
+{% if leituras %}
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Temperatura (°C)</th>
+      <th>Umidade (%)</th>
+      <th>Pressão (hPa)</th>
+      <th>Timestamp</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for l in leituras %}
+    <tr>
+      <td>{{ l.id }}</td>
+      <td>{{ l.temperatura }}</td>
+      <td>{{ l.umidade }}</td>
+      <td>{{ l.pressao if l.pressao is not none else '—' }}</td>
+      <td>{{ l.timestamp }}</td>
+      <td>
+        <a href="/leituras/{{ l.id }}">Ver</a>
+        <button data-id="{{ l.id }}" onclick="deletar(this.dataset.id)">Deletar</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p>Nenhuma leitura registrada ainda.</p>
+{% endif %}
+
+<p><a href="/leituras">Ver histórico completo →</a></p>
+
+<script>
+async function deletar(id) {
+  if (!confirm(`Deletar leitura #${id}?`)) return;
+  const resp = await fetch(`/leituras/${id}`, { method: 'DELETE' });
+  if (resp.ok) location.reload();
+  else alert('Erro ao deletar.');
+}
+</script>
+{% endblock %}

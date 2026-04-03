@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Erro {{ erro.code }}{% endblock %}
+
+{% block content %}
+<h1>Erro {{ erro.code }}</h1>
+<p>{{ erro.description }}</p>
+<a href="/">&#8592; Voltar ao painel</a>
+{% endblock %}

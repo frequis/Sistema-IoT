@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Histórico — Estação Meteorológica{% endblock %}
+
+{% block content %}
+<h1>Histórico de Leituras</h1>
+<p>Total: {{ total }} registro(s) &mdash; Página {{ pagina }} de {{ paginas }}</p>
+
+{% if leituras %}
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Temperatura (°C)</th>
+      <th>Umidade (%)</th>
+      <th>Pressão (hPa)</th>
+      <th>Timestamp</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for l in leituras %}
+    <tr>
+      <td>{{ l.id }}</td>
+      <td>{{ l.temperatura }}</td>
+      <td>{{ l.umidade }}</td>
+      <td>{{ l.pressao if l.pressao is not none else '—' }}</td>
+      <td>{{ l.timestamp }}</td>
+      <td>
+        <a href="/leituras/{{ l.id }}">Ver</a>
+        <a href="/leituras/{{ l.id }}/editar">Editar</a>
+        <button data-id="{{ l.id }}" onclick="deletar(this.dataset.id)">Deletar</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="paginacao">
+  {% if pagina > 1 %}
+    <a href="/leituras?pagina={{ pagina - 1 }}&limite={{ limite }}">&#8592; Anterior</a>
+  {% endif %}
+  {% if pagina < paginas %}
+    <a href="/leituras?pagina={{ pagina + 1 }}&limite={{ limite }}">Próxima &#8594;</a>
+  {% endif %}
+</div>
+{% else %}
+  <p>Nenhuma leitura registrada ainda.</p>
+{% endif %}
+
+<script>
+async function deletar(id) {
+  if (!confirm(`Deletar leitura #${id}?`)) return;
+  const resp = await fetch(`/leituras/${id}`, { method: 'DELETE' });
+  if (resp.ok) location.reload();
+  else alert('Erro ao deletar.');
+}
+</script>
+{% endblock %}
