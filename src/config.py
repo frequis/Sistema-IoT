@@ -1,7 +1,7 @@
 import os
 
 # Porta serial do Arduino
-SERIAL_PORTA = os.getenv("SERIAL_PORTA", "COM3")   # Linux: /dev/ttyUSB0
+SERIAL_PORTA = os.getenv("SERIAL_PORTA", "COM5")
 SERIAL_BAUD = int(os.getenv("SERIAL_BAUD", "9600"))
 
 # URL base da API Flask

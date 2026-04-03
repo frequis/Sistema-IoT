@@ -12,6 +12,10 @@ from config import FLASK_DEBUG, FLASK_HOST, FLASK_PORT
 
 app = Flask(__name__)
 
+# Garante que as tabelas existam independente de como o servidor é iniciado
+# (python app.py  OU  flask run)
+with app.app_context():
+    init_db()
 
 
 def _quer_json():
@@ -82,6 +86,26 @@ def listar():
 
 
 # ---------------------------------------------------------------------------
+# Mapeamento: distância (cm) → variáveis meteorológicas simuladas
+# ---------------------------------------------------------------------------
+DIST_MIN, DIST_MAX = 2.0, 200.0
+
+def _mapear(valor, out_min, out_max, inverso=False):
+    """Mapeia distância para uma faixa de saída, com clamp nas bordas."""
+    t = (max(DIST_MIN, min(DIST_MAX, valor)) - DIST_MIN) / (DIST_MAX - DIST_MIN)
+    if inverso:
+        t = 1.0 - t
+    return round(out_min + t * (out_max - out_min), 1)
+
+def _simular_de_distancia(distancia):
+    return {
+        "temperatura": _mapear(distancia, 15.0, 40.0),           # perto = mais frio
+        "umidade":     _mapear(distancia, 30.0, 95.0, inverso=True),  # perto = mais úmido
+        "pressao":     _mapear(distancia, 990.0, 1030.0),        # perto = pressão baixa
+    }
+
+
+# ---------------------------------------------------------------------------
 # POST /leituras
 # ---------------------------------------------------------------------------
 @app.route("/leituras", methods=["POST"])
@@ -90,19 +114,26 @@ def criar():
     if not dados:
         abort(400, "Body JSON obrigatório.")
 
-    temperatura = dados.get("temperatura")
-    umidade = dados.get("umidade")
-    if temperatura is None or umidade is None:
-        abort(400, "Campos obrigatórios: temperatura, umidade.")
-
     try:
-        temperatura = float(temperatura)
-        umidade = float(umidade)
-        pressao = float(dados["pressao"]) if "pressao" in dados else None
+        # Modo sensor ultrassônico: recebe só distancia e deriva os demais
+        if "distancia" in dados and "temperatura" not in dados:
+            distancia = float(dados["distancia"])
+            simulado  = _simular_de_distancia(distancia)
+            temperatura = simulado["temperatura"]
+            umidade     = simulado["umidade"]
+            pressao     = simulado["pressao"]
+        else:
+            # Modo sensor real (DHT11 + BMP): recebe os valores diretamente
+            if dados.get("temperatura") is None or dados.get("umidade") is None:
+                abort(400, "Campos obrigatórios: temperatura e umidade (ou distancia).")
+            temperatura = float(dados["temperatura"])
+            umidade     = float(dados["umidade"])
+            pressao     = float(dados["pressao"])   if "pressao"   in dados else None
+            distancia   = float(dados["distancia"]) if "distancia" in dados else None
     except (ValueError, TypeError):
         abort(400, "Valores numéricos inválidos.")
 
-    novo_id = inserir_leitura(temperatura, umidade, pressao)
+    novo_id = inserir_leitura(temperatura, umidade, pressao, distancia)
     leitura = buscar_leitura(novo_id)
     return jsonify(leitura), 201
 

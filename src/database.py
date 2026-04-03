@@ -15,24 +15,35 @@ def get_db_connection():
 
 
 def init_db():
-    """Cria as tabelas se não existirem, executando o schema.sql."""
+    """Cria as tabelas se não existirem e aplica migrações de colunas novas."""
     with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
         schema = f.read()
     conn = get_db_connection()
     try:
         conn.executescript(schema)
+        # Migração: adiciona colunas que podem não existir em bancos antigos
+        colunas_existentes = {
+            row[1] for row in conn.execute("PRAGMA table_info(leituras)")
+        }
+        novas_colunas = {
+            "pressao":  "ALTER TABLE leituras ADD COLUMN pressao REAL",
+            "distancia": "ALTER TABLE leituras ADD COLUMN distancia REAL",
+        }
+        for coluna, sql in novas_colunas.items():
+            if coluna not in colunas_existentes:
+                conn.execute(sql)
         conn.commit()
     finally:
         conn.close()
 
 
-def inserir_leitura(temperatura, umidade, pressao=None):
+def inserir_leitura(temperatura, umidade, pressao=None, distancia=None):
     """Insere uma nova leitura e retorna o id gerado."""
     conn = get_db_connection()
     try:
         cursor = conn.execute(
-            "INSERT INTO leituras (temperatura, umidade, pressao) VALUES (?, ?, ?)",
-            (temperatura, umidade, pressao),
+            "INSERT INTO leituras (temperatura, umidade, pressao, distancia) VALUES (?, ?, ?, ?)",
+            (temperatura, umidade, pressao, distancia),
         )
         conn.commit()
         return cursor.lastrowid

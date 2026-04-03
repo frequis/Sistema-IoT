@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS leituras (
     temperatura REAL NOT NULL,
     umidade REAL NOT NULL,
     pressao REAL,
+    distancia REAL,
     timestamp DATETIME DEFAULT (datetime('now','localtime'))
 );
